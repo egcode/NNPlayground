@@ -49,32 +49,22 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     costs = []                         # keep track of cost
     
     # Parameters initialization. (≈ 1 line of code)
-    ### START CODE HERE ###
     parameters = initialize_parameters_deep(layers_dims)
-    ### END CODE HERE ###
     
     # Loop (gradient descent)
     for i in range(0, num_iterations):
 
         # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
-        ### START CODE HERE ### (≈ 1 line of code)
         AL, caches = L_model_forward(X, parameters)
-        ### END CODE HERE ###
         
         # Compute cost.
-        ### START CODE HERE ### (≈ 1 line of code)
         cost = compute_cost(AL, Y)
-        ### END CODE HERE ###
     
         # Backward propagation.
-        ### START CODE HERE ### (≈ 1 line of code)
         grads = L_model_backward(AL, Y, caches)
-        ### END CODE HERE ###
  
         # Update parameters.
-        ### START CODE HERE ### (≈ 1 line of code)
         parameters = update_parameters(parameters, grads, learning_rate)
-        ### END CODE HERE ###
                 
         # Print the cost every 100 training example
         if print_cost and i % 100 == 0:
@@ -91,12 +81,12 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     return parameters
 
 
-
-
 ## RUN THE MODEL
 parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
 
+print("\n")
 print ("-->On the train set:")
 predictions_train = predict(train_x, train_y, parameters)
 print ("-->On the test set:")
 predictions_test = predict(test_x, test_y, parameters)
+print("\n")
