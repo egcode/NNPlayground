@@ -78,7 +78,10 @@ def L_model_forward(X, parameters):
     return AL, caches
 
 def compute_cost(AL, Y):
-    
+    """
+    Implements cross entropy cost.
+
+    """
     m = Y.shape[1]
 
     cost = (1./m) * (-np.dot(Y,np.log(AL).T) - np.dot(1-Y, np.log(1-AL).T))
@@ -88,6 +91,32 @@ def compute_cost(AL, Y):
     
     return cost
 
+def compute_cost_with_regularization(AL, Y, parameters, lambd):
+    """
+    Implement the cost function with L2 regularization.
+    
+    Arguments:
+    AL -- post-activation, output of forward propagation, of shape (output size, number of examples)
+    Y -- "true" labels vector, of shape (output size, number of examples)
+    parameters -- python dictionary containing parameters of the model
+    
+    Returns:
+    cost - value of the regularized loss function (formula (2))
+    """
+    m = Y.shape[1]    
+    cross_entropy_cost = compute_cost(AL, Y)
+    frobenius_norm_square = 0.
+    
+    L = (len(parameters) // 2) + 1
+    for l in range(1, L): 
+        W = parameters['W' + str(l)]
+        frobenius_norm_square = frobenius_norm_square + np.sum(np.square(W))
+    
+    L2_regularization_cost = (1./m) * (lambd/2.) * (np.sum(frobenius_norm_square))
+    
+    cost = cross_entropy_cost + L2_regularization_cost
+    
+    return cost
 
 def predict(X, y, parameters):
     
