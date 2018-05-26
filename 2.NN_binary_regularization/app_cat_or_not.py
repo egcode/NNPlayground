@@ -67,7 +67,7 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     
         # Backward propagation.
         assert(lambd==0 or keep_prob==1)    # it is possible to use both L2 regularization and dropout, 
-                                            # but this assignment will only explore one at a time
+                                            # but here will try only one at a time
         if lambd == 0 and keep_prob == 1:
             grads = L_model_backward(AL, Y, caches)
         elif lambd != 0:
