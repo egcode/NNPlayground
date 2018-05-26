@@ -1,15 +1,6 @@
 import numpy as np
 
 def initialize_parameters_deep(layer_dims):
-    """
-    Arguments:
-    layer_dims -- python array (list) containing the dimensions of each layer in our network
-    
-    Returns:
-    parameters -- python dictionary containing your parameters "W1", "b1", ..., "WL", "bL":
-                    Wl -- weight matrix of shape (layer_dims[l], layer_dims[l-1])
-                    bl -- bias vector of shape (layer_dims[l], 1)
-    """
     
     np.random.seed(1)
     parameters = {}
@@ -29,90 +20,39 @@ def initialize_parameters_deep(layer_dims):
 
 
 def sigmoid(Z):
-    """
-    Implements the sigmoid activation in numpy
-    
-    Arguments:
-    Z -- numpy array of any shape
-    
-    Returns:
-    A -- output of sigmoid(z), same shape as Z
-    cache -- returns Z as well, useful during backpropagation
-    """
     
     A = 1/(1+np.exp(-Z))
-    cache = Z
     
-    return A, cache
+    return A
 
 def relu(Z):
-    """
-    Implement the RELU function.
-
-    Arguments:
-    Z -- Output of the linear layer, of any shape
-
-    Returns:
-    A -- Post-activation parameter, of the same shape as Z
-    cache -- a python dictionary containing "A" ; stored for computing the backward pass efficiently
-    """
     
     A = np.maximum(0,Z)
     
     assert(A.shape == Z.shape)
     
-    cache = Z 
-    return A, cache
-
+    return A
 
 
 def linear_forward(A_prev, W, b):
-    """
-    Implement the linear part of a layer's forward propagation.
-
-    Arguments:
-    A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
-    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-    b -- bias vector, numpy array of shape (size of the current layer, 1)
-
-    Returns:
-    Z -- the input of the activation function, also called pre-activation parameter 
-    cache -- a python dictionary containing "A", "W" and "b" ; stored for computing the backward pass efficiently
-    """
     
     Z = W.dot(A_prev) + b
     
     assert(Z.shape == (W.shape[0], A_prev.shape[1]))
-    cache = (A_prev, W, b)
     
-    return Z, cache
+    return Z
 
 def linear_activation_forward(A_prev, W, b, activation):
-    """
-    Implement the forward propagation for the LINEAR->ACTIVATION layer
-
-    Arguments:
-    A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
-    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-    b -- bias vector, numpy array of shape (size of the current layer, 1)
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
-
-    Returns:
-    A -- the output of the activation function, also called the post-activation value 
-    cache -- a python dictionary containing "linear_cache" and "activation_cache";
-             stored for computing the backward pass efficiently
-    """
     
+    Z = linear_forward(A_prev, W, b)
     if activation == "sigmoid":
-        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
-        Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = sigmoid(Z)
-    
+        A = sigmoid(Z)
     elif activation == "relu":
-        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
-        Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = relu(Z)
+        A = relu(Z)
     
+    linear_cache = (A_prev, W, b)
+    activation_cache = Z
+
     assert (A.shape == (W.shape[0], A_prev.shape[1]))
     cache = (linear_cache, activation_cache)
 
@@ -120,31 +60,16 @@ def linear_activation_forward(A_prev, W, b, activation):
 
 
 def L_model_forward(X, parameters):
-    """
-    Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
-    
-    Arguments:
-    X -- data, numpy array of shape (input size, number of examples)
-    parameters -- output of initialize_parameters_deep()
-    
-    Returns:
-    AL -- last post-activation value
-    caches -- list of caches containing:
-                every cache of linear_relu_forward() (there are L-1 of them, indexed from 0 to L-2)
-                the cache of linear_sigmoid_forward() (there is one, indexed L-1)
-    """
 
     caches = []
     A = X
     L = len(parameters) // 2                  # number of layers in the neural network
 
-    # Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
     for l in range(1, L):
         A_prev = A 
         A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], activation = "relu")
         caches.append(cache)
     
-    # Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
     AL, cache = linear_activation_forward(A, parameters['W' + str(L)], parameters['b' + str(L)], activation = "sigmoid")
     caches.append(cache)
     
@@ -153,20 +78,9 @@ def L_model_forward(X, parameters):
     return AL, caches
 
 def compute_cost(AL, Y):
-    """
-    Implement the cost function defined by equation (7).
-
-    Arguments:
-    AL -- probability vector corresponding to your label predictions, shape (1, number of examples)
-    Y -- true "label" vector (for example: containing 0 if non-cat, 1 if cat), shape (1, number of examples)
-
-    Returns:
-    cost -- cross-entropy cost
-    """
     
     m = Y.shape[1]
 
-    # Compute loss from aL and y.
     cost = (1./m) * (-np.dot(Y,np.log(AL).T) - np.dot(1-Y, np.log(1-AL).T))
     
     cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
@@ -175,18 +89,7 @@ def compute_cost(AL, Y):
     return cost
 
 
-
 def predict(X, y, parameters):
-    """
-    This function is used to predict the results of a  L-layer neural network.
-    
-    Arguments:
-    X -- data set of examples you would like to label
-    parameters -- parameters of the trained model
-    
-    Returns:
-    p -- predictions for the given dataset X
-    """
     
     m = X.shape[1]
     n = len(parameters) // 2 # number of layers in the neural network

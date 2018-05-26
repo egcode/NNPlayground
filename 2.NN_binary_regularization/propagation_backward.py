@@ -1,16 +1,6 @@
 import numpy as np
 
 def sigmoid_backward(dA, cache):
-    """
-    Implement the backward propagation for a single SIGMOID unit.
-
-    Arguments:
-    dA -- post-activation gradient, of any shape
-    cache -- 'Z' where we store for computing backward propagation efficiently
-
-    Returns:
-    dZ -- Gradient of the cost with respect to Z
-    """
     
     Z = cache
     
@@ -23,16 +13,6 @@ def sigmoid_backward(dA, cache):
 
 
 def relu_backward(dA, cache):
-    """
-    Implement the backward propagation for a single RELU unit.
-
-    Arguments:
-    dA -- post-activation gradient, of any shape
-    cache -- 'Z' where we store for computing backward propagation efficiently
-
-    Returns:
-    dZ -- Gradient of the cost with respect to Z
-    """
     
     Z = cache
     dZ = np.array(dA, copy=True) # just converting dz to a correct object.
@@ -46,18 +26,6 @@ def relu_backward(dA, cache):
 
 
 def linear_backward(dZ, cache):
-    """
-    Implement the linear portion of backward propagation for a single layer (layer l)
-
-    Arguments:
-    dZ -- Gradient of the cost with respect to the linear output (of current layer l)
-    cache -- tuple of values (A_prev, W, b) coming from the forward propagation in the current layer
-
-    Returns:
-    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
-    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
-    db -- Gradient of the cost with respect to b (current layer l), same shape as b
-    """
     A_prev, W, b = cache
     m = A_prev.shape[1]
 
@@ -72,19 +40,6 @@ def linear_backward(dZ, cache):
     return dA_prev, dW, db
 
 def linear_activation_backward(dA, cache, activation):
-    """
-    Implement the backward propagation for the LINEAR->ACTIVATION layer.
-    
-    Arguments:
-    dA -- post-activation gradient for current layer l 
-    cache -- tuple of values (linear_cache, activation_cache) we store for computing backward propagation efficiently
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
-    
-    Returns:
-    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
-    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
-    db -- Gradient of the cost with respect to b (current layer l), same shape as b
-    """
     linear_cache, activation_cache = cache
     
     if activation == "relu":
@@ -98,22 +53,6 @@ def linear_activation_backward(dA, cache, activation):
     return dA_prev, dW, db
 
 def L_model_backward(AL, Y, caches):
-    """
-    Implement the backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
-    
-    Arguments:
-    AL -- probability vector, output of the forward propagation (L_model_forward())
-    Y -- true "label" vector (containing 0 if non-cat, 1 if cat)
-    caches -- list of caches containing:
-                every cache of linear_activation_forward() with "relu" (there are (L-1) or them, indexes from 0 to L-2)
-                the cache of linear_activation_forward() with "sigmoid" (there is one, index L-1)
-    
-    Returns:
-    grads -- A dictionary with the gradients
-             grads["dA" + str(l)] = ... 
-             grads["dW" + str(l)] = ...
-             grads["db" + str(l)] = ... 
-    """
     grads = {}
     L = len(caches) # the number of layers
     m = AL.shape[1]
@@ -137,18 +76,6 @@ def L_model_backward(AL, Y, caches):
     return grads
 
 def update_parameters(parameters, grads, learning_rate):
-    """
-    Update parameters using gradient descent
-    
-    Arguments:
-    parameters -- python dictionary containing your parameters 
-    grads -- python dictionary containing your gradients, output of L_model_backward
-    
-    Returns:
-    parameters -- python dictionary containing your updated parameters 
-                  parameters["W" + str(l)] = ... 
-                  parameters["b" + str(l)] = ...
-    """
     
     L = len(parameters) // 2 # number of layers in the neural network
 
