@@ -52,6 +52,9 @@ def linear_activation_backward(dA, cache, activation):
     
     return dA_prev, dW, db
 
+def cost_backward(Y, AL):
+    return - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+
 def L_model_backward(AL, Y, caches):
     grads = {}
     L = len(caches) # the number of layers
@@ -59,7 +62,7 @@ def L_model_backward(AL, Y, caches):
     Y = Y.reshape(AL.shape) # after this line, Y is the same shape as AL
     
     # Initializing the backpropagation
-    dAL = - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+    dAL = cost_backward(Y, AL)
     
     # Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "AL, Y, caches". Outputs: "grads["dAL"], grads["dWL"], grads["dbL"]
     current_cache = caches[L-1]
