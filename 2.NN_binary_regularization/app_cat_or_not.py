@@ -54,16 +54,20 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     # Loop (gradient descent)
     for i in range(0, num_iterations):
 
+
         # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
-        AL, caches = L_model_forward(X, parameters)
-        
+        #AL, caches = L_model_forward(X, parameters)
+        if keep_prob == 1:
+            AL, caches = L_model_forward(X, parameters)
+        elif keep_prob < 1:
+            AL, caches = L_model_forward_with_dropout(X, parameters, keep_prob)
+
         
         # Cost function
         if lambd == 0:
             cost = compute_cost(AL, Y)
         else:
             cost = compute_cost_with_regularization(AL, Y, parameters, lambd)
-
     
         # Backward propagation.
         assert(lambd==0 or keep_prob==1)    # it is possible to use both L2 regularization and dropout, 
@@ -72,7 +76,8 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
             grads = L_model_backward(AL, Y, caches)
         elif lambd != 0:
             grads = L_model_backward(AL, Y, caches, lambd)
-
+        elif keep_prob < 1:
+            grads = L_model_backward_with_dropout(AL, Y, caches, keep_prob)
  
         # Update parameters.
         parameters = update_parameters(parameters, grads, learning_rate)
@@ -95,16 +100,20 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
 ## RUN THE MODEL
 parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
 parameters_reg = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True, lambd = 0.7)
+parameters_dropout = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True, keep_prob = 0.9)
+
 
 ## SAVE
 np.save('parameters.npy', parameters) 
 np.save('parameters_reg.npy', parameters_reg) 
+np.save('parameters_dropout.npy', parameters_dropout) 
 
 
 ###########################################################
 ## LOAD  
 parameters = np.load('parameters.npy').item()
 parameters_reg = np.load('parameters_reg.npy').item()
+parameters_dropout = np.load('parameters_dropout.npy').item()
 
 
 print("\n")
@@ -119,5 +128,12 @@ print ("-->Regularized On the train set:")
 predictions_train = predict(train_x, train_y, parameters_reg)
 print ("-->Regularized On the test set:")
 predictions_test = predict(test_x, test_y, parameters_reg)
+print("\n")
+
+print("\n")
+print ("-->Dropout On the train set:")
+predictions_train = predict(train_x, train_y, parameters_dropout)
+print ("-->Dropout On the test set:")
+predictions_test = predict(test_x, test_y, parameters_dropout)
 print("\n")
 

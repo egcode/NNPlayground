@@ -49,7 +49,7 @@ def linear_activation_forward(A_prev, W, b, activation):
         A = sigmoid(Z)
     elif activation == "relu":
         A = relu(Z)
-    
+        
     linear_cache = (A_prev, W, b)
     activation_cache = Z
 
@@ -57,7 +57,6 @@ def linear_activation_forward(A_prev, W, b, activation):
     cache = (linear_cache, activation_cache)
 
     return A, cache
-
 
 def L_model_forward(X, parameters):
 
@@ -76,6 +75,53 @@ def L_model_forward(X, parameters):
     assert(AL.shape == (1,X.shape[1]))
             
     return AL, caches
+
+
+# =============================================================================
+def linear_activation_forward_with_dropout(A_prev, W, b, keep_prob, activation):
+    
+    # Dropout with relu layers
+    D = np.random.rand(A_prev.shape[0], A_prev.shape[1])     
+    D = (D < keep_prob)                            
+    A_prev = np.multiply(A_prev, D)                         
+    A_prev = A_prev / keep_prob 
+
+    Z = linear_forward(A_prev, W, b)    
+    if activation == "sigmoid":
+        A = sigmoid(Z)
+
+    elif activation == "relu":
+        A = relu(Z)
+
+    linear_cache = (A_prev, W, b, D)
+    activation_cache = Z
+
+    assert (A.shape == (W.shape[0], A_prev.shape[1]))
+    assert (A_prev.shape == D.shape)
+
+    cache = (linear_cache, activation_cache)
+                             
+    return A, cache
+
+
+def L_model_forward_with_dropout(X, parameters, keep_prob = 1):
+
+    caches = []
+    A = X
+    L = len(parameters) // 2                  # number of layers in the neural network
+
+    for l in range(1, L):
+        A_prev = A 
+        A, cache = linear_activation_forward_with_dropout(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], keep_prob, activation = "relu")
+        caches.append(cache)
+    
+    AL, cache = linear_activation_forward_with_dropout(A, parameters['W' + str(L)], parameters['b' + str(L)], keep_prob, activation = "sigmoid")
+    caches.append(cache)
+    
+    assert(AL.shape == (1,X.shape[1]))
+            
+    return AL, caches
+# =============================================================================
 
 def compute_cost(AL, Y):
     """
