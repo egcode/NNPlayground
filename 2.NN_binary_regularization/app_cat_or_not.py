@@ -100,7 +100,7 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
 ## RUN THE MODEL
 parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
 parameters_reg = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True, lambd = 0.7)
-parameters_dropout = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True, keep_prob = 0.9)
+parameters_dropout = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True, keep_prob = 0.8)
 
 
 ## SAVE

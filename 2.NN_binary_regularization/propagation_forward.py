@@ -78,14 +78,17 @@ def L_model_forward(X, parameters):
 
 
 # =============================================================================
-def linear_activation_forward_with_dropout(A_prev, W, b, keep_prob, activation):
+def linear_activation_forward_with_dropout(A_prev, W, b, keep_prob, layer, activation):
     
-    # Dropout with relu layers
-    D = np.random.rand(A_prev.shape[0], A_prev.shape[1])     
-    D = (D < keep_prob)                            
-    A_prev = np.multiply(A_prev, D)                         
-    A_prev = A_prev / keep_prob 
-
+    if layer != 1: # Everywhere except if A_prev == X
+        # Dropout with relu layers
+        D = np.random.rand(A_prev.shape[0], A_prev.shape[1])     
+        D = (D < keep_prob)                            
+        A_prev = np.multiply(A_prev, D)                         
+        A_prev = A_prev / keep_prob 
+    else:
+        D = np.ones((A_prev.shape[0], A_prev.shape[1]))    
+        
     Z = linear_forward(A_prev, W, b)    
     if activation == "sigmoid":
         A = sigmoid(Z)
@@ -112,10 +115,10 @@ def L_model_forward_with_dropout(X, parameters, keep_prob = 1):
 
     for l in range(1, L):
         A_prev = A 
-        A, cache = linear_activation_forward_with_dropout(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], keep_prob, activation = "relu")
+        A, cache = linear_activation_forward_with_dropout(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], keep_prob, l, activation = "relu")
         caches.append(cache)
     
-    AL, cache = linear_activation_forward_with_dropout(A, parameters['W' + str(L)], parameters['b' + str(L)], keep_prob, activation = "sigmoid")
+    AL, cache = linear_activation_forward_with_dropout(A, parameters['W' + str(L)], parameters['b' + str(L)], keep_prob, 1, activation = "sigmoid")
     caches.append(cache)
     
     assert(AL.shape == (1,X.shape[1]))
@@ -129,7 +132,12 @@ def compute_cost(AL, Y):
 
     """
     m = Y.shape[1]
-
+    
+    if np.isnan(AL).any():
+        print("\nAL: " + str(AL))
+        print("1-AL: " + str(1-AL))
+        print("\n")
+        assert(np.isnan(AL).any())
     cost = (1./m) * (-np.dot(Y,np.log(AL).T) - np.dot(1-Y, np.log(1-AL).T))
     
     cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).

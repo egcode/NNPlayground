@@ -19,7 +19,7 @@ def relu_backward(dA, cache):
     
     # When z <= 0, you should set dz to 0 as well. 
     dZ[Z <= 0] = 0
-    
+
     assert (dZ.shape == Z.shape)
     
     return dZ
