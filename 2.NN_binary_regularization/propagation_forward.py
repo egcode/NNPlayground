@@ -133,11 +133,6 @@ def compute_cost(AL, Y):
     """
     m = Y.shape[1]
     
-    if np.isnan(AL).any():
-        print("\nAL: " + str(AL))
-        print("1-AL: " + str(1-AL))
-        print("\n")
-        assert(np.isnan(AL).any())
     cost = (1./m) * (-np.dot(Y,np.log(AL).T) - np.dot(1-Y, np.log(1-AL).T))
     
     cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
