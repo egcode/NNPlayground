@@ -80,7 +80,7 @@ def L_model_forward(X, parameters):
 # =============================================================================
 def linear_activation_forward_with_dropout(A_prev, W, b, keep_prob, layer, activation):
     
-    if layer != 1: # Everywhere except if A_prev == X
+    if layer != 1: # Everywhere except if A_prev == X, or last layer A_prev == AL
         # Dropout with relu layers
         D = np.random.rand(A_prev.shape[0], A_prev.shape[1])     
         D = (D < keep_prob)                            
